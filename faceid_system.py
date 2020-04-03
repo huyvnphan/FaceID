@@ -1,5 +1,6 @@
-from faceid_dataset import get_dataloader
+from faceid_dataset import FaceIDDataset
 from squeezenet import SqueezeNet
+from torch.utils.data import DataLoader
 import torch
 import pytorch_lightning as pl
 
@@ -63,7 +64,11 @@ class FaceIDSystem(pl.LightningModule):
         return [optimizer], [scheduler]
     
     def train_dataloader(self):
-        return get_dataloader(self.hparams.data_dir, self.hparams.batch_size)
+        dataset = FaceIDDataset(self.hparams.data_dir)
+        dataloader = DataLoader(dataset, batch_size=self.hparams.batch_size, num_workers=4, shuffle=True)
+        return dataloader
     
     def val_dataloader(self):
-        return get_dataloader(self.hparams.data_dir, self.hparams.batch_size, train=False)
+        dataset = FaceIDDataset(self.hparams.data_dir, train=False)
+        dataloader = DataLoader(dataset, batch_size=self.hparams.batch_size, num_workers=4, shuffle=False)
+        return dataloader

@@ -6,15 +6,24 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 
 class FaceIDDataset(Dataset):
-    def __init__(self, data_dir, transform, train):
+    def __init__(self, data_dir, train=True):
         self.transform = transform
         self.poses_per_person = 51
+        mean = [0.5255, 0.5095, 0.4861, 0.7114]
+        std = [0.2075, 0.1959, 0.1678, 0.2599]
         if train:
             self.data_dir = os.path.join(data_dir, 'train')
             self.no_people = 26
+            self.transform = transforms.Compose([transforms.RandomApply([transforms.RandomRotation(30)]),
+                                                 transforms.RandomVerticalFlip(),
+                                                 transforms.RandomCrop(300),
+                                                 transforms.ToTensor(),
+                                                 transforms.Normalize(mean, std)])
         else:
             self.data_dir = os.path.join(data_dir, 'val')
             self.no_people = 5
+            self.transform = transforms.Compose([transforms.ToTensor(),
+                                                 transforms.Normalize(mean, std)])
             
     def __len__(self):
         return self.no_people * self.poses_per_person
@@ -46,21 +55,3 @@ class FaceIDDataset(Dataset):
         x1 = self.transform(x1)
         
         return (x0, x1, y)
-    
-def get_dataloader(data_dir, batch_size, train=True):
-    
-    mean = [0.5255, 0.5095, 0.4861, 0.7114]
-    std = [0.2075, 0.1959, 0.1678, 0.2599]
-    if train:
-        transform = transforms.Compose([transforms.RandomApply([transforms.RandomRotation(30)]),
-                                        transforms.RandomVerticalFlip(),
-                                        transforms.RandomCrop(300),
-                                        transforms.ToTensor(),
-                                        transforms.Normalize(mean, std)])
-    else:
-        transform = transforms.Compose([transforms.ToTensor(),
-                                        transforms.Normalize(mean, std)])
-    
-    dataset = FaceIDDataset(data_dir, transform, train)
-    dataloader = DataLoader(dataset, batch_size=batch_size, num_workers=4, shuffle=True)
-    return dataloader
