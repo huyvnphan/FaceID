@@ -7,7 +7,6 @@ from PIL import Image
 
 class FaceIDDataset(Dataset):
     def __init__(self, data_dir, train=True):
-        self.transform = transform
         self.poses_per_person = 51
         mean = [0.5255, 0.5095, 0.4861, 0.7114]
         std = [0.2075, 0.1959, 0.1678, 0.2599]
