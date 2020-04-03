@@ -30,20 +30,20 @@ class SqueezeNet(nn.Module):
     def __init__(self, num_classes=128):
         super(SqueezeNet, self).__init__()
         self.num_classes = num_classes
-            self.features = nn.Sequential(
-                nn.Conv2d(3, 64, kernel_size=3, stride=2),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(64, 16, 64, 64),
-                Fire(128, 16, 64, 64),
-                nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(128, 32, 128, 128),
-                Fire(256, 32, 128, 128),
-                nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(256, 48, 192, 192),
-                Fire(384, 48, 192, 192),
-                Fire(384, 64, 256, 256),
-                Fire(512, 64, 256, 256),)
+        self.features = nn.Sequential(
+            nn.Conv2d(4, 64, kernel_size=3, stride=2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
+            Fire(64, 16, 64, 64),
+            Fire(128, 16, 64, 64),
+            nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
+            Fire(128, 32, 128, 128),
+            Fire(256, 32, 128, 128),
+            nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
+            Fire(256, 48, 192, 192),
+            Fire(384, 48, 192, 192),
+            Fire(384, 64, 256, 256),
+            Fire(512, 64, 256, 256),)
 
         # Final convolution is initialized differently from the rest
         final_conv = nn.Conv2d(512, self.num_classes, kernel_size=1)

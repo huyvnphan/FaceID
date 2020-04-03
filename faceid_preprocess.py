@@ -1,6 +1,5 @@
 import os, sys, shutil, requests, zipfile, io
 import numpy as np
-import torch
 from tqdm import tqdm as pbar
 from PIL import Image 
 sys.path.insert(0, '/home/huy/Projects/FaceID')

@@ -1,6 +1,5 @@
 import os
 import random
-import torch
 import torchvision.transforms as transforms
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
@@ -38,7 +37,7 @@ class FaceIDDataset(Dataset):
         else:
             # Different person
             person2_id = random.choice(list(set(range(self.no_people)) - set([person_id])))
-            pose2_id = random.randint(0, self.poses_per_person)
+            pose2_id = random.randint(0, self.poses_per_person-1)
             x1 = np.load(os.path.join(self.data_dir, 'person' + str(person2_id) + '_pose' + str(pose2_id) + '.npy'))
             x1 = Image.fromarray(x1)
             y = -1
