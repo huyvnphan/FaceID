@@ -60,7 +60,7 @@ class FaceIDSystem(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.model.parameters(), lr=1e-4, weight_decay=1e-3)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1)
-        return optimizer
+        return [optimizer], [scheduler]
     
     def train_dataloader(self):
         return get_dataloader(self.hparams.data_dir, self.hparams.batch_size)
