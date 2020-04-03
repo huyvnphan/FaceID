@@ -51,9 +51,15 @@ def get_dataloader(data_dir, batch_size, train=True):
     
     mean = [0.5255, 0.5095, 0.4861, 0.7114]
     std = [0.2075, 0.1959, 0.1678, 0.2599]
-    transform = transforms.Compose([transforms.RandomCrop(300),
-                                    transforms.ToTensor(),
-                                    transforms.Normalize(mean, std)])
+    if train:
+        transform = transforms.Compose([transforms.RandomApply([transforms.RandomRotation(30)]),
+                                        transforms.RandomVerticalFlip(),
+                                        transforms.RandomCrop(300),
+                                        transforms.ToTensor(),
+                                        transforms.Normalize(mean, std)])
+    else:
+        transform = transforms.Compose([transforms.ToTensor(),
+                                        transforms.Normalize(mean, std)])
     
     dataset = FaceIDDataset(data_dir, transform, train)
     dataloader = DataLoader(dataset, batch_size=batch_size, num_workers=4, shuffle=True)

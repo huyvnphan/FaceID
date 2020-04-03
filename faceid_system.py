@@ -11,7 +11,7 @@ class FaceIDSystem(pl.LightningModule):
         self.model = SqueezeNet()
         self.loss = torch.nn.CosineEmbeddingLoss(margin=0.5)
         self.cosine = torch.nn.CosineSimilarity()
-        self.threshold = 0.8
+        self.threshold = 0.85
         
     def calculate_stat(self, embed_x0, embed_x1, y):
         cosine = self.cosine(embed_x0, embed_x1)
