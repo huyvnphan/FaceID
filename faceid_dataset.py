@@ -13,8 +13,9 @@ class FaceIDDataset(Dataset):
         if train:
             self.data_dir = os.path.join(data_dir, 'train')
             self.no_people = 26
-            self.transform = transforms.Compose([transforms.RandomApply([transforms.RandomRotation(30)]),
-                                                 transforms.RandomVerticalFlip(),
+            self.transform = transforms.Compose([transforms.RandomVerticalFlip(),
+                                                 transforms.RandomHorizontalFlip(),
+                                                 transforms.RandomApply([transforms.RandomRotation(30)]),
                                                  transforms.RandomCrop(300),
                                                  transforms.ToTensor(),
                                                  transforms.Normalize(mean, std)])
