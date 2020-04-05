@@ -1,0 +1,6 @@
+key,value
+description,Default
+data_dir,/raid/data/pytorch_dataset/faceid/
+gpus,1
+batch_size,128
+epoch,200
