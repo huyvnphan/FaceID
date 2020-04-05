@@ -36,6 +36,8 @@ class FaceIDDataset(Dataset):
         x0 = np.load(os.path.join(self.data_dir, 'person' + str(person_id) + '_pose' + str(pose_id) + '.npy'))
         x0 = Image.fromarray(x0)
         
+        print('Anchor: ', person_id, pose_id)
+        
         # Get 2nd photo
         if random.random() > 0.5:
             # Same person
@@ -43,6 +45,7 @@ class FaceIDDataset(Dataset):
             x1 = np.load(os.path.join(self.data_dir, 'person' + str(person_id) + '_pose' + str(pose2_id) + '.npy'))
             x1 = Image.fromarray(x1)
             y = 1
+            print('Same: ', person_id, pose2_id, y)
         else:
             # Different person
             person2_id = random.choice(list(set(range(self.no_people)) - set([person_id])))
@@ -50,8 +53,11 @@ class FaceIDDataset(Dataset):
             x1 = np.load(os.path.join(self.data_dir, 'person' + str(person2_id) + '_pose' + str(pose2_id) + '.npy'))
             x1 = Image.fromarray(x1)
             y = -1
-            
+            print('Diff: ', person2_id, pose2_id, y)
+
         x0 = self.transform(x0)
         x1 = self.transform(x1)
+        
+        print()
         
         return (x0, x1, y)

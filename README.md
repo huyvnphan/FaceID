@@ -9,3 +9,5 @@
 - torchvision > 0.5.0
 - tensorboard >= 2.2.0
 - pytorch-lightning >= 0.7.1
+
+![alt text](figures/fig1.jpg "Examples")
