@@ -14,7 +14,7 @@ def main(hparams):
     
     model = FaceIDSystem(hparams)
     trainer = Trainer(gpus=[hparams.gpus],
-                      max_epoch=hparams.epoch,
+                      max_epochs=hparams.epochs,
                       early_stop_callback=False,
                       check_val_every_n_epoch=5)
     trainer.fit(model)
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', type=str, default='/raid/data/pytorch_dataset/faceid/')
     parser.add_argument('--gpus', type=int, default=1)
     parser.add_argument('--batch_size', type=int, default=128)
-    parser.add_argument('--epoch', type=int, default=200)
+    parser.add_argument('--epochs', type=int, default=300)
     args = parser.parse_args()
 
     main(args)

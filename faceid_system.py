@@ -66,11 +66,11 @@ class FaceIDSystem(pl.LightningModule):
     def train_dataloader(self):
         dataset = FaceIDDataset(self.hparams.data_dir)
         dataloader = DataLoader(dataset, batch_size=self.hparams.batch_size,
-                                num_workers=8, shuffle=True, drop_last=True, pin_memory=True)
+                                num_workers=4, shuffle=True, drop_last=True, pin_memory=True)
         return dataloader
     
     def val_dataloader(self):
         dataset = FaceIDDataset(self.hparams.data_dir, train=False)
         dataloader = DataLoader(dataset, batch_size=self.hparams.batch_size,
-                                num_workers=8, shuffle=True, pin_memory=True)
+                                num_workers=4, shuffle=True, pin_memory=True)
         return dataloader

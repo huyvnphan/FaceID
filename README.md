@@ -2,7 +2,12 @@
 - Reimplementation of the FaceID authentication in PyTorch
 - Inspired by this blog https://towardsdatascience.com/how-i-implemented-iphone-xs-faceid-using-deep-learning-in-python-d5dbaa128e1d
 
-![alt text](figures/fig1.jpg "Examples")
+### Positive Example
+![alt text](figures/fig1.jpg "Positive Example")
+### Negative Example
+![alt text](figures/fig2.jpg "Negative Example")
+
+
 
 # Requirements
 - tqdm >= 4.44.1

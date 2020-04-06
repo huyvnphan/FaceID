@@ -5,31 +5,31 @@ import torch.nn.init as init
 
 class Fire(nn.Module):
 
-    def __init__(self, inplanes, squeeze_planes,
-                 expand1x1_planes, expand3x3_planes):
+    def __init__(self, inplanes, squeeze_planes, expand1x1_planes, expand3x3_planes):
         super(Fire, self).__init__()
         self.inplanes = inplanes
-        self.squeeze = nn.Conv2d(inplanes, squeeze_planes, kernel_size=1)
+        self.squeeze = nn.Conv2d(inplanes, squeeze_planes, kernel_size=1, bias=False)
+        self.squeeze_norm = nn.BatchNorm2d(squeeze_planes)
         self.squeeze_activation = nn.ReLU(inplace=True)
-        self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes,
-                                   kernel_size=1)
+        
+        self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes, kernel_size=1, bias=False)
+        self.expand1x1_norm = nn.BatchNorm2d(expand1x1_planes)
         self.expand1x1_activation = nn.ReLU(inplace=True)
-        self.expand3x3 = nn.Conv2d(squeeze_planes, expand3x3_planes,
-                                   kernel_size=3, padding=1)
+        
+        self.expand3x3 = nn.Conv2d(squeeze_planes, expand3x3_planes, kernel_size=3, padding=1, bias=False)
+        self.expand3x3_norm = nn.BatchNorm2d(expand3x3_planes)
         self.expand3x3_activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        x = self.squeeze_activation(self.squeeze(x))
-        return torch.cat([
-            self.expand1x1_activation(self.expand1x1(x)),
-            self.expand3x3_activation(self.expand3x3(x))
-        ], 1)
+        x = self.squeeze_activation(self.squeeze_norm(self.squeeze(x)))
+        x1 = self.expand1x1_activation(self.expand1x1_norm(self.expand1x1(x)))
+        x2 = self.expand3x3_activation(self.expand3x3_norm(self.expand3x3(x)))
+        return torch.cat([x1, x2], 1)
 
 
 class SqueezeNet(nn.Module):
-    def __init__(self, num_classes=128):
+    def __init__(self):
         super(SqueezeNet, self).__init__()
-        self.num_classes = num_classes
         self.features = nn.Sequential(
             nn.Conv2d(4, 64, kernel_size=3, stride=2),
             nn.ReLU(inplace=True),
@@ -46,11 +46,10 @@ class SqueezeNet(nn.Module):
             Fire(512, 64, 256, 256),)
 
         # Final convolution is initialized differently from the rest
-        final_conv = nn.Conv2d(512, self.num_classes, kernel_size=1)
+        final_conv = nn.Conv2d(512, 128, kernel_size=1)
         self.classifier = nn.Sequential(
             nn.Dropout(p=0.5),
             final_conv,
-            nn.ReLU(inplace=True),
             nn.AdaptiveAvgPool2d((1, 1))
         )
 
@@ -66,5 +65,6 @@ class SqueezeNet(nn.Module):
     def forward(self, x):
         x = self.features(x)
         x = self.classifier(x)
-        return torch.flatten(x, 1)
+        x = x.view(-1, 128)
+        return x
     
