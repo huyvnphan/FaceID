@@ -1,6 +1,10 @@
 key,value
 description,Default
 data_dir,/raid/data/pytorch_dataset/faceid/
-gpus,1
+gpus,2
 batch_size,128
-epochs,300
+epochs,250
+optimizer,AdamW
+learning_rate,0.001
+weight_decay,0.001
+reduce_lr_per,100
