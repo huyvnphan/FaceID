@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.init as init
+import os
 
 
 class Fire(nn.Module):
@@ -67,4 +68,11 @@ class SqueezeNet(nn.Module):
         x = self.classifier(x)
         x = x.view(-1, 128)
         return x
+    
+def faceid(pretrained=False):
+    script_dir = os.path.dirname(__file__)
+    state_dict = torch.load(os.path.join(script_dir,'faceid_trained.pt'), map_location=torch.device('cpu'))
+    model = SqueezeNet()
+    model.load_state_dict(state_dict)
+    return model
     
