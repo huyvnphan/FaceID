@@ -9,8 +9,14 @@ class FaceIDDataset(Dataset):
     def __init__(self, data_dir, train=True):
         self.train = train
         self.poses_per_person = 51
-        mean = [0.5255, 0.5095, 0.4861, 0.7114]
-        std = [0.2075, 0.1959, 0.1678, 0.2599]
+        
+#         True mean and std
+#         mean = [0.5255, 0.5095, 0.4861, 0.7114]
+#         std = [0.2075, 0.1959, 0.1678, 0.2599]
+
+#         Mean and std so that input in range [-1, 1]
+        mean = [0.5, 0.5, 0.5, 0.5]
+        std = [0.5, 0.5, 0.5, 0.5]
         if self.train:
             self.data_dir = os.path.join(data_dir, 'train')
             self.no_people = 26
@@ -29,7 +35,7 @@ class FaceIDDataset(Dataset):
         if self.train:
             return self.no_people * self.poses_per_person
         else:
-            return self.no_people * self.poses_per_person * 100 # validate more samples
+            return self.no_people * self.poses_per_person * 10 # validate more samples
         
     def __getitem__(self, index):
         

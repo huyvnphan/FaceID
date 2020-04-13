@@ -1,5 +1,5 @@
 from faceid_dataset import FaceIDDataset
-from squeezenet import SqueezeNet
+from faceid_model import FaceID_Model
 from torch.utils.data import DataLoader
 import torch
 import pytorch_lightning as pl
@@ -9,7 +9,7 @@ class FaceIDModule(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
         self.hparams = hparams
-        self.model = SqueezeNet()
+        self.model = FaceID_Model()
         self.loss = torch.nn.CosineEmbeddingLoss(margin=0.5)
         self.cosine = torch.nn.CosineSimilarity()
         self.threshold = 0.85
