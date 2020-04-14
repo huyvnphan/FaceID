@@ -21,13 +21,14 @@ class FaceIDDataset(Dataset):
             self.data_dir = os.path.join(data_dir, 'train')
             self.no_people = 26
             self.transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                                 transforms.RandomCrop(300, padding=10),
+                                                 transforms.CenterCrop(300),
+                                                 transforms.RandomCrop(256),
                                                  transforms.ToTensor(),
                                                  transforms.Normalize(mean, std)])
         else:
             self.data_dir = os.path.join(data_dir, 'val')
             self.no_people = 5
-            self.transform = transforms.Compose([transforms.CenterCrop(300),
+            self.transform = transforms.Compose([transforms.CenterCrop(256),
                                                  transforms.ToTensor(),
                                                  transforms.Normalize(mean, std)])
             
@@ -35,7 +36,7 @@ class FaceIDDataset(Dataset):
         if self.train:
             return self.no_people * self.poses_per_person
         else:
-            return self.no_people * self.poses_per_person * 10 # validate more samples
+            return self.no_people * self.poses_per_person * 50 # validate more samples
         
     def __getitem__(self, index):
         

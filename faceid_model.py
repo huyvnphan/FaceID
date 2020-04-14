@@ -73,7 +73,10 @@ def FaceID_Model(pretrained=False):
     model = SqueezeNet()
     if pretrained:
         script_dir = os.path.dirname(__file__)
-        state_dict = torch.load(os.path.join(script_dir,'faceid_trained.pt'), map_location=torch.device('cpu'))
+        state_dict = torch.load(os.path.join(script_dir,'faceid_weights.pt'), map_location=torch.device('cpu'))
         model.load_state_dict(state_dict)
+        model = model.eval()
+        for p in model.parameters():
+            p.requires_grad = False
     return model
     

@@ -3,8 +3,8 @@ description,Default
 data_dir,/raid/data/pytorch_dataset/faceid/
 gpu,3
 batch_size,128
-epochs,90
+epochs,150
 optimizer,AdamW
 learning_rate,0.001
 weight_decay,0.001
-reduce_lr_per,30
+reduce_lr_per,50
