@@ -30,7 +30,7 @@ def main(hparams):
         gpus=hparams.gpus,
         max_epochs=hparams.max_epochs,
         early_stop_callback=False,
-        check_val_every_n_epoch=2,
+        check_val_every_n_epoch=5,
         fast_dev_run=hparams.fast_dev_run,
         deterministic=True,
         weights_summary=None,
@@ -44,17 +44,17 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", type=str, default="/data/huy/faceid/")
     parser.add_argument("--gpus", type=str, default="0,")
     parser.add_argument("--batch_size", type=int, default=128)
-    parser.add_argument("--max_epochs", type=int, default=150)
+    parser.add_argument("--max_epochs", type=int, default=200)
     parser.add_argument(
         "--optimizer", type=str, default="AdamW", choices=["AdamW", "SGD"]
     )
     parser.add_argument("--learning_rate", type=float, default=1e-3)
-    parser.add_argument("--weight_decay", type=float, default=1e-4)
+    parser.add_argument("--weight_decay", type=float, default=1e-3)
     parser.add_argument(
         "--cnn_arch",
         type=str,
         default="squeeze_net",
-        choices=["squeeze_net", "shuffle_net"],
+        choices=["squeeze_net", "shuffle_net", "res_net"],
     )
     parser.add_argument("--fast_dev_run", type=bool, default=False)
     args = parser.parse_args()

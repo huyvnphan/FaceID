@@ -2,6 +2,7 @@ import os
 import torch
 from cnn_architecture.squeeze_net import SqueezeNet
 from cnn_architecture.shuffle_net import ShuffleNetV2
+from cnn_architecture.res_net import ResNet
 
 
 def get_model(arch):
@@ -9,6 +10,8 @@ def get_model(arch):
         return SqueezeNet()
     elif arch == "shuffle_net":
         return ShuffleNetV2()
+    elif arch == "res_net":
+        return ResNet()
 
 
 def FaceIDModel(arch, pretrained=False):
