@@ -1,10 +1,9 @@
 import os
-import glob
+import shutil
 from argparse import ArgumentParser
 
 import torch
 from pytorch_lightning import Trainer, seed_everything
-from pytorch_lightning.loggers import WandbLogger
 
 from module import FaceIDModule
 
@@ -20,49 +19,28 @@ def main(hparams):
 
     model = FaceIDModule(hparams)
 
-    wandb_logger = WandbLogger(
-        name=hparams.description,
-        project="faceid",
-        save_dir=os.path.join(os.getcwd(), "logs/"),
-    )
-
     trainer = Trainer(
-        logger=wandb_logger,
-        gpus=hparams.gpus,
-        max_epochs=hparams.max_epochs,
-        early_stop_callback=False,
-        check_val_every_n_epoch=5,
-        fast_dev_run=False,
-        deterministic=True,
-        weights_summary=None,
-        weights_save_path="checkpoints/" + hparams.cnn_arch,
+        gpus=hparams.gpus, deterministic=True, default_root_dir="test_temp"
     )
-    trainer.fit(model)
-
-    # Load best checkpoint
-    checkpoint_path = glob.glob("checkpoints/" + hparams.cnn_arch + "/*/*/*/*.ckpt")[0]
-    model = FaceIDModule.load_from_checkpoint(checkpoint_path)
-
-    # Save weights from best checkpoint
-    statedict_path = os.path.join("weights", hparams.cnn_arch + ".pt")
-    torch.save(model.model.state_dict(), statedict_path)
+    trainer.test(model)
+    shutil.rmtree(os.path.join(os.getcwd(), "test_temp"))
 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--description", type=str, default="Train")
+    parser.add_argument("--description", type=str, default="Test")
     parser.add_argument("--data_dir", type=str, default="/data/huy/faceid/")
     parser.add_argument("--gpus", type=str, default="0,")
     parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--max_epochs", type=int, default=200)
     parser.add_argument("--learning_rate", type=float, default=1e-3)
-    parser.add_argument("--weight_decay", type=float, default=1e-3)
+    parser.add_argument("--weight_decay", type=float, default=1e-4)
     parser.add_argument(
         "--cnn_arch",
         type=str,
         default="squeeze_net",
         choices=["squeeze_net", "shuffle_net", "res_net", "mobile_net"],
     )
-    parser.add_argument("--pretrained", type=bool, default=False)
+    parser.add_argument("--pretrained", type=bool, default=True)
     args = parser.parse_args()
     main(args)

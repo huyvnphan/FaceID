@@ -10,7 +10,7 @@ class FaceIDModule(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
         self.hparams = hparams
-        self.model = FaceIDModel(hparams.cnn_arch)
+        self.model = FaceIDModel(self.hparams.cnn_arch, self.hparams.pretrained)
         self.loss = torch.nn.CosineEmbeddingLoss(margin=0.5)
         self.cosine = torch.nn.CosineSimilarity()
         self.threshold = 0.75
@@ -69,24 +69,31 @@ class FaceIDModule(pl.LightningModule):
         }
         return {"val_loss": loss, "log": logs}
 
-    def configure_optimizers(self):
-        if self.hparams.optimizer == "AdamW":
-            optimizer = torch.optim.AdamW(
-                self.model.parameters(),
-                lr=self.hparams.learning_rate,
-                weight_decay=self.hparams.weight_decay,
-            )
-        elif self.hparams.optimizer == "SGD":
-            optimizer = torch.optim.SGD(
-                self.model.parameters(),
-                lr=self.hparams.learning_rate,
-                weight_decay=self.hparams.weight_decay,
-                momentum=0.9,
-                nesterov=True,
-            )
-        else:
-            raise Exception("Only support AdamW and SGD")
+    def test_step(self, batch, batch_nb):
+        return self.validation_step(batch, batch_nb)
 
+    def test_epoch_end(self, outputs):
+        same_class_cosine = (
+            torch.stack([x["cosine/same_class"] for x in outputs]).mean().item()
+        )
+        diff_class_cosine = (
+            torch.stack([x["cosine/diff_class"] for x in outputs]).mean().item()
+        )
+        accuracy = torch.stack([x["accuracy"] for x in outputs]).mean().item()
+
+        logs = {
+            "cosine/same_class": round(same_class_cosine, 4),
+            "cosine/diff_class": round(diff_class_cosine, 4),
+            "accuracy": round(accuracy, 4),
+        }
+        return {"progress_bar": logs}
+
+    def configure_optimizers(self):
+        optimizer = torch.optim.AdamW(
+            self.model.parameters(),
+            lr=self.hparams.learning_rate,
+            weight_decay=self.hparams.weight_decay,
+        )
         total_step = len(self.train_dataloader()) * self.hparams.max_epochs
         scheduler = {
             "scheduler": torch.optim.lr_scheduler.CosineAnnealingLR(
@@ -115,3 +122,6 @@ class FaceIDModule(pl.LightningModule):
             dataset, batch_size=self.hparams.batch_size, num_workers=4, pin_memory=True,
         )
         return dataloader
+
+    def test_dataloader(self):
+        return self.val_dataloader()

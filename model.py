@@ -23,7 +23,7 @@ def FaceIDModel(arch, pretrained=False):
     if pretrained:
         script_dir = os.path.dirname(__file__)
         state_dict = torch.load(
-            os.path.join(script_dir, "weights", "faceid_" + arch + ".pt"),
+            os.path.join(script_dir, "weights", arch + ".pt"),
             map_location=torch.device("cpu"),
         )
         model.load_state_dict(state_dict)
