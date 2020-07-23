@@ -31,7 +31,7 @@ def main(hparams):
         max_epochs=hparams.max_epochs,
         early_stop_callback=False,
         check_val_every_n_epoch=5,
-        fast_dev_run=True,
+        fast_dev_run=False,
         deterministic=True,
         weights_summary=None,
         weights_save_path="weights/" + hparams.cnn_arch,
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         "--optimizer", type=str, default="AdamW", choices=["AdamW", "SGD"]
     )
     parser.add_argument("--learning_rate", type=float, default=1e-3)
-    parser.add_argument("--weight_decay", type=float, default=1e-3)
+    parser.add_argument("--weight_decay", type=float, default=1e-4)
     parser.add_argument(
         "--cnn_arch",
         type=str,

@@ -94,4 +94,5 @@ class SqueezeNet(nn.Module):
         x = self.features(x)
         x = self.classifier(x)
         x = x.view(-1, self.num_classes)
+        print(x)
         return x
