@@ -144,6 +144,7 @@ class ResNet(nn.Module):
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
+        self.num_classes = num_classes
 
         self.inplanes = 64
         self.dilation = 1
@@ -175,7 +176,7 @@ class ResNet(nn.Module):
             block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2]
         )
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
+        self.fc = nn.Linear(512 * block.expansion, self.num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -250,7 +251,7 @@ class ResNet(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
-        x = x.view(-1, 128)
+        x = x.view(-1, self.num_classes)
         return x
 
     def forward(self, x):

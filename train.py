@@ -31,9 +31,10 @@ def main(hparams):
         max_epochs=hparams.max_epochs,
         early_stop_callback=False,
         check_val_every_n_epoch=5,
-        fast_dev_run=hparams.fast_dev_run,
+        fast_dev_run=True,
         deterministic=True,
         weights_summary=None,
+        weights_save_path="weights/" + hparams.cnn_arch,
     )
     trainer.fit(model)
 
@@ -54,8 +55,7 @@ if __name__ == "__main__":
         "--cnn_arch",
         type=str,
         default="squeeze_net",
-        choices=["squeeze_net", "shuffle_net", "res_net"],
+        choices=["squeeze_net", "shuffle_net", "res_net", "mobile_net"],
     )
-    parser.add_argument("--fast_dev_run", type=bool, default=False)
     args = parser.parse_args()
     main(args)

@@ -96,9 +96,12 @@ class ShuffleNetV2(nn.Module):
         self,
         stages_repeats=[4, 8, 4],
         stages_out_channels=[24, 116, 232, 464, 1024],
+        num_classes=128,
         inverted_residual=InvertedResidual,
     ):
         super(ShuffleNetV2, self).__init__()
+
+        self.num_classes = num_classes
 
         if len(stages_repeats) != 3:
             raise ValueError("expected stages_repeats as list of 3 positive ints")
@@ -133,7 +136,8 @@ class ShuffleNetV2(nn.Module):
             nn.BatchNorm2d(output_channels),
             nn.ReLU(inplace=True),
         )
-        self.fc = nn.Linear(output_channels, 128)
+
+        self.fc = nn.Linear(output_channels, num_classes)
 
     def _forward_impl(self, x):
         # See note [TorchScript super()]
@@ -145,7 +149,7 @@ class ShuffleNetV2(nn.Module):
         x = self.conv5(x)
         x = x.mean([2, 3])  # globalpool
         x = self.fc(x)
-        x = x.view(-1, 128)
+        x = x.view(-1, self.num_classes)
         return x
 
     def forward(self, x):
