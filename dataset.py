@@ -8,8 +8,10 @@ from torch.utils.data import Dataset
 
 
 class FaceIDDataset(Dataset):
-    def __init__(self, data_dir, train=True):
-        self.train = train
+    def __init__(self, data_dir, split, size):
+        self.split = split
+        self.size = size
+
         self.poses_per_person = 51
 
         # True mean and std
@@ -20,7 +22,7 @@ class FaceIDDataset(Dataset):
         mean = [0.5, 0.5, 0.5, 0.5]
         std = [0.5, 0.5, 0.5, 0.5]
 
-        if self.train:
+        if self.split == "train":
             self.data_dir = os.path.join(data_dir, "train")
             self.no_people = 26
             self.transform = transforms.Compose(
@@ -32,7 +34,7 @@ class FaceIDDataset(Dataset):
                     transforms.Normalize(mean, std),
                 ]
             )
-        else:
+        elif self.split == "val":
             self.data_dir = os.path.join(data_dir, "val")
             self.no_people = 5
             self.transform = transforms.Compose(
@@ -42,14 +44,14 @@ class FaceIDDataset(Dataset):
                     transforms.Normalize(mean, std),
                 ]
             )
+        else:
+            raise ("Only support train or val")
 
     def __len__(self):
-        if self.train:
-            return self.no_people * self.poses_per_person
-        else:
-            return self.no_people * self.poses_per_person * 50  # validate more samples
+        return self.size
 
     def __getitem__(self, index):
+        # First photo is deterministic. Second photo is random
         # Get 1st photo
         real_index = index % (self.no_people * self.poses_per_person)
         person_id = real_index // self.poses_per_person
@@ -63,9 +65,9 @@ class FaceIDDataset(Dataset):
         x0 = Image.fromarray(x0_array)
 
         # Get 2nd photo
-        if self.train:
+        if self.split == "train":
             choice = random.randint(0, 3)
-        else:
+        elif self.split == "val":
             choice = random.randint(0, 1)
 
         if choice == 0:

@@ -105,19 +105,22 @@ class FaceIDModule(pl.LightningModule):
         return [optimizer], [scheduler]
 
     def train_dataloader(self):
-        dataset = FaceIDDataset(self.hparams.data_dir)
+        dataset = FaceIDDataset(
+            self.hparams.data_dir, "train", size=self.hparams.train_size
+        )
         dataloader = DataLoader(
             dataset,
             batch_size=self.hparams.batch_size,
             num_workers=4,
             shuffle=True,
-            drop_last=True,
             pin_memory=True,
         )
         return dataloader
 
     def val_dataloader(self):
-        dataset = FaceIDDataset(self.hparams.data_dir, train=False)
+        dataset = FaceIDDataset(
+            self.hparams.data_dir, "val", size=self.hparams.val_size
+        )
         dataloader = DataLoader(
             dataset, batch_size=self.hparams.batch_size, num_workers=4, pin_memory=True,
         )

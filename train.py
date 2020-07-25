@@ -20,6 +20,9 @@ def main(hparams):
 
     model = FaceIDModule(hparams)
 
+    assert hparams.train_size % hparams.batch_size == 0
+    assert hparams.val_size % hparams.batch_size == 0
+
     wandb_logger = WandbLogger(
         name=hparams.description,
         project="faceid",
@@ -32,7 +35,7 @@ def main(hparams):
         max_epochs=hparams.max_epochs,
         early_stop_callback=False,
         check_val_every_n_epoch=5,
-        fast_dev_run=False,
+        fast_dev_run=True,
         deterministic=True,
         weights_summary=None,
         weights_save_path="checkpoints/" + hparams.cnn_arch,
@@ -54,6 +57,8 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", type=str, default="/data/huy/faceid/")
     parser.add_argument("--gpus", type=str, default="0,")
     parser.add_argument("--batch_size", type=int, default=128)
+    parser.add_argument("--train_size", type=int, default=128 * 100)
+    parser.add_argument("--val_size", type=int, default=128 * 50)
     parser.add_argument("--max_epochs", type=int, default=200)
     parser.add_argument("--learning_rate", type=float, default=1e-3)
     parser.add_argument("--weight_decay", type=float, default=1e-3)
