@@ -19,6 +19,10 @@ def main(hparams):
 
     model = FaceIDModule(hparams)
 
+    assert hparams.train_size % hparams.batch_size == 0
+    assert hparams.val_size % hparams.batch_size == 0
+    assert hparams.test_size % hparams.batch_size == 0
+
     trainer = Trainer(
         gpus=hparams.gpus, deterministic=True, default_root_dir="test_temp"
     )
@@ -34,6 +38,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--train_size", type=int, default=128 * 100)
     parser.add_argument("--val_size", type=int, default=128 * 50)
+    parser.add_argument("--test_size", type=int, default=128 * 200)
     parser.add_argument("--max_epochs", type=int, default=200)
     parser.add_argument("--learning_rate", type=float, default=1e-3)
     parser.add_argument("--weight_decay", type=float, default=1e-3)

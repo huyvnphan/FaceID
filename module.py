@@ -127,4 +127,10 @@ class FaceIDModule(pl.LightningModule):
         return dataloader
 
     def test_dataloader(self):
-        return self.val_dataloader()
+        dataset = FaceIDDataset(
+            self.hparams.data_dir, "val", size=self.hparams.test_size
+        )
+        dataloader = DataLoader(
+            dataset, batch_size=self.hparams.batch_size, num_workers=4, pin_memory=True,
+        )
+        return dataloader

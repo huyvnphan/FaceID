@@ -22,6 +22,7 @@ def main(hparams):
 
     assert hparams.train_size % hparams.batch_size == 0
     assert hparams.val_size % hparams.batch_size == 0
+    assert hparams.test_size % hparams.batch_size == 0
 
     wandb_logger = WandbLogger(
         name=hparams.description,
