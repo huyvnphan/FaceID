@@ -27,9 +27,8 @@ class FaceIDDataset(Dataset):
             self.no_people = 26
             self.transform = transforms.Compose(
                 [
-                    transforms.CenterCrop(300),
-                    transforms.RandomCrop(256),
                     transforms.RandomHorizontalFlip(),
+                    transforms.RandomResizedCrop(256, scale=(0.25, 1.0)),
                     transforms.ToTensor(),
                     transforms.Normalize(mean, std),
                 ]
