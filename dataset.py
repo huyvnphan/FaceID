@@ -30,6 +30,7 @@ class FaceIDDataset(Dataset):
                     transforms.CenterCrop(300),
                     transforms.RandomCrop(256),
                     transforms.RandomHorizontalFlip(),
+                    # transforms.RandomHVerticalFlip(),
                     transforms.ToTensor(),
                     transforms.Normalize(mean, std),
                 ]

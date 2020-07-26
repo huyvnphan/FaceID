@@ -60,9 +60,9 @@ if __name__ == "__main__":
     parser.add_argument("--train_size", type=int, default=128 * 100)
     parser.add_argument("--val_size", type=int, default=128 * 50)
     parser.add_argument("--test_size", type=int, default=128 * 100)
-    parser.add_argument("--max_epochs", type=int, default=200)
+    parser.add_argument("--max_epochs", type=int, default=100)
     parser.add_argument("--learning_rate", type=float, default=1e-3)
-    parser.add_argument("--weight_decay", type=float, default=1e-3)
+    parser.add_argument("--weight_decay", type=float, default=1e-2)
     parser.add_argument(
         "--cnn_arch",
         type=str,
