@@ -48,6 +48,6 @@ if __name__ == "__main__":
         default="squeeze_net",
         choices=["squeeze_net", "shuffle_net", "res_net", "mobile_net"],
     )
-    parser.add_argument("--pretrained", type=bool, default=True)
+    parser.add_argument("--pretrained", type=int, default=1, choices=[0, 1])
     args = parser.parse_args()
     main(args)

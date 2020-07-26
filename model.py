@@ -17,10 +17,10 @@ def get_model(arch):
         return MobileNetV2()
 
 
-def FaceIDModel(arch, pretrained=False):
+def FaceIDModel(arch, pretrained):
     model = get_model(arch)
 
-    if pretrained:
+    if pretrained == 1:
         script_dir = os.path.dirname(__file__)
         state_dict = torch.load(
             os.path.join(script_dir, "weights", arch + ".pt"),
