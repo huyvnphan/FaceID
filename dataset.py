@@ -129,13 +129,14 @@ class FaceIDDataset(Dataset):
             y = -1
 
         x0 = self.transform(x0)
-        if random.random() > 0.5:
-            x0_mask = (x0[3] > -0.999).unsqueeze(0).float()
-            x0 = x0 * x0_mask
-
         x1 = self.transform(x1)
-        if random.random() > 0.5:
-            x1_mask = (x1[3] > -0.999).unsqueeze(0).float()
-            x1 = x1 * x1_mask
+
+        if self.split == "train":
+            if random.random() > 0.5:
+                x0_mask = (x0[3] > -0.999).unsqueeze(0).float()
+                x0 = x0 * x0_mask
+            if random.random() > 0.5:
+                x1_mask = (x1[3] > -0.999).unsqueeze(0).float()
+                x1 = x1 * x1_mask
 
         return (x0, x1, y)
