@@ -67,7 +67,8 @@ class FaceIDModule(pl.LightningModule):
             "cosine/diff_class": diff_class_cosine,
             "accuracy": accuracy,
         }
-        return {"val_loss": loss, "log": logs}
+        error = 1 - accuracy
+        return {"val_loss": error, "log": logs}
 
     def test_step(self, batch, batch_nb):
         return self.validation_step(batch, batch_nb)

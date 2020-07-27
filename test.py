@@ -37,7 +37,7 @@ if __name__ == "__main__":
     parser.add_argument("--gpus", type=str, default="0,")
     parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--train_size", type=int, default=128 * 100)
-    parser.add_argument("--val_size", type=int, default=128 * 50)
+    parser.add_argument("--val_size", type=int, default=128 * 100)
     parser.add_argument("--test_size", type=int, default=128 * 100)
     parser.add_argument("--max_epochs", type=int, default=100)
     parser.add_argument("--learning_rate", type=float, default=1e-3)
