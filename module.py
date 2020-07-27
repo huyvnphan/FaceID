@@ -13,7 +13,7 @@ class FaceIDModule(pl.LightningModule):
         self.model = FaceIDModel(self.hparams.cnn_arch, self.hparams.pretrained)
         self.loss = torch.nn.CosineEmbeddingLoss(margin=0.5)
         self.cosine = torch.nn.CosineSimilarity()
-        self.threshold = 0.5
+        self.threshold = 0.75
 
     def calculate_stat(self, embed_x0, embed_x1, y):
         cosine = self.cosine(embed_x0, embed_x1)
@@ -105,7 +105,7 @@ class FaceIDModule(pl.LightningModule):
                 nesterov=True,
             )
         else:
-            raise ("Only support AdamW and SGd")
+            raise ("Only support AdamW and SGD.")
 
         total_step = len(self.train_dataloader()) * self.hparams.max_epochs
         scheduler = {
