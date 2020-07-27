@@ -13,7 +13,7 @@ class FaceIDModule(pl.LightningModule):
         self.model = FaceIDModel(self.hparams.cnn_arch, self.hparams.pretrained)
         self.loss = torch.nn.CosineEmbeddingLoss(margin=0.5)
         self.cosine = torch.nn.CosineSimilarity()
-        self.threshold = 0.75
+        self.threshold = 0.5
 
     def calculate_stat(self, embed_x0, embed_x1, y):
         cosine = self.cosine(embed_x0, embed_x1)
@@ -90,11 +90,23 @@ class FaceIDModule(pl.LightningModule):
         return {"progress_bar": logs}
 
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(
-            self.model.parameters(),
-            lr=self.hparams.learning_rate,
-            weight_decay=self.hparams.weight_decay,
-        )
+        if self.hparams.optimizer == "AdamW":
+            optimizer = torch.optim.AdamW(
+                self.model.parameters(),
+                lr=self.hparams.learning_rate,
+                weight_decay=self.hparams.weight_decay,
+            )
+        elif self.hparams.optimizer == "SGD":
+            optimizer = torch.optim.SGD(
+                self.model.parameters(),
+                lr=self.hparams.learning_rate,
+                weight_decay=self.hparams.weight_decay,
+                momentum=0.9,
+                nesterov=True,
+            )
+        else:
+            raise ("Only support AdamW and SGd")
+
         total_step = len(self.train_dataloader()) * self.hparams.max_epochs
         scheduler = {
             "scheduler": torch.optim.lr_scheduler.CosineAnnealingLR(

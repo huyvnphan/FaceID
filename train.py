@@ -61,6 +61,9 @@ if __name__ == "__main__":
     parser.add_argument("--val_size", type=int, default=128 * 100)
     parser.add_argument("--test_size", type=int, default=128 * 100)
     parser.add_argument("--max_epochs", type=int, default=50)
+    parser.add_argument(
+        "--optimizer", type=str, default="AdamW", choices=["AdamW", "SGD"]
+    )
     parser.add_argument("--learning_rate", type=float, default=1e-3)
     parser.add_argument("--weight_decay", type=float, default=1e-2)
     parser.add_argument(
@@ -69,6 +72,6 @@ if __name__ == "__main__":
         default="squeeze_net",
         choices=["squeeze_net", "shuffle_net", "res_net", "mobile_net"],
     )
-    parser.add_argument("--pretrained", type=bool, default=False)
+    parser.add_argument("--pretrained", type=int, default=0, choices=[0, 1])
     args = parser.parse_args()
     main(args)

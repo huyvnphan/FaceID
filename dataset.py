@@ -29,9 +29,9 @@ class FaceIDDataset(Dataset):
                 [
                     A.HorizontalFlip(),
                     A.ShiftScaleRotate(
-                        shift_limit=0.25,
-                        scale_limit=0.25,
-                        rotate_limit=45,
+                        shift_limit=0.0625,
+                        scale_limit=0.1,
+                        rotate_limit=15,
                         p=0.5,
                         border_mode=0,
                     ),
