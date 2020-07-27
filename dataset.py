@@ -1,9 +1,9 @@
 import os
 import random
 
+import albumentations as A
 import numpy as np
-import torchvision.transforms as transforms
-from PIL import Image
+from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset
 
 
@@ -25,119 +25,86 @@ class FaceIDDataset(Dataset):
         if self.split == "train":
             self.data_dir = os.path.join(data_dir, "train")
             self.no_people = 26
-            self.transform = transforms.Compose(
+            self.transform = A.Compose(
                 [
-                    transforms.CenterCrop(300),
-                    transforms.RandomCrop(256),
-                    transforms.RandomHorizontalFlip(),
-                    # transforms.RandomHVerticalFlip(),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean, std),
+                    A.HorizontalFlip(),
+                    A.ShiftScaleRotate(
+                        shift_limit=0.25,
+                        scale_limit=0.25,
+                        rotate_limit=45,
+                        p=0.5,
+                        border_mode=0,
+                    ),
+                    A.RandomCrop(256, 256),
+                    A.Normalize(mean, std),
+                    ToTensorV2(),
                 ]
             )
+
         elif self.split == "val":
             self.data_dir = os.path.join(data_dir, "val")
             self.no_people = 5
-            self.transform = transforms.Compose(
-                [
-                    transforms.CenterCrop(256),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean, std),
-                ]
+            self.transform = A.Compose(
+                [A.CenterCrop(256, 256), A.Normalize(mean, std), ToTensorV2()]
             )
         else:
             raise ("Only support train or val")
+
+    def random_apply_mask(self, x):
+        new_x = x.clone()
+        if self.split == "train":
+            if random.random() > 0.5:
+                x_mask = (x[3] > -0.999).unsqueeze(0).float()
+                new_x[:3] = x[:3] * x_mask
+        return new_x
 
     def __len__(self):
         return self.size
 
     def __getitem__(self, index):
-        # First photo is deterministic. Second photo is random
+        # First photo is deterministic. Second photo is random.
         # Get 1st photo
         real_index = index % (self.no_people * self.poses_per_person)
         person_id = real_index // self.poses_per_person
         pose_id = real_index % self.poses_per_person
-        x0_array = np.load(
+        x_ref = np.load(
             os.path.join(
                 self.data_dir,
                 "person" + str(person_id) + "_pose" + str(pose_id) + ".npy",
             )
         )
-        x0 = Image.fromarray(x0_array)
 
         # Get 2nd photo
-        if self.split == "train":
-            choice = random.randint(0, 3)
-        elif self.split == "val":
-            choice = random.randint(0, 1)
-
-        if choice == 0:
+        if random.random() > 0.5:
             # Same person - correct RGB, correct D
             pose2_id = random.choice(
                 list(set(range(self.poses_per_person)) - set([pose_id]))
             )
-            x1_array = np.load(
+            x = np.load(
                 os.path.join(
                     self.data_dir,
                     "person" + str(person_id) + "_pose" + str(pose2_id) + ".npy",
                 )
             )
-            x1 = Image.fromarray(x1_array)
             y = 1
-        elif choice == 1:
-            # wrong RGB, wrong D
-            person2_id = random.choice(
-                list(set(range(self.no_people)) - set([person_id]))
-            )
-            pose2_id = random.randint(0, self.poses_per_person - 1)
-            x1_array = np.load(
-                os.path.join(
-                    self.data_dir,
-                    "person" + str(person2_id) + "_pose" + str(pose2_id) + ".npy",
-                )
-            )
-            x1 = Image.fromarray(x1_array)
-            y = -1
-        elif choice == 2:
-            # correct RGB, wrong D
-            person2_id = random.choice(
-                list(set(range(self.no_people)) - set([person_id]))
-            )
-            pose2_id = random.randint(0, self.poses_per_person - 1)
-            x1_array = np.load(
-                os.path.join(
-                    self.data_dir,
-                    "person" + str(person2_id) + "_pose" + str(pose2_id) + ".npy",
-                )
-            )
-            x1_array[:, :, :3] = x0_array[:, :, :3]
-            x1 = Image.fromarray(x1_array)
-            y = -1
         else:
-            # wrong RGB, correct D
+            # Different person - wrong RGB, wrong D
             person2_id = random.choice(
                 list(set(range(self.no_people)) - set([person_id]))
             )
             pose2_id = random.randint(0, self.poses_per_person - 1)
-            x1_array = np.load(
+            x = np.load(
                 os.path.join(
                     self.data_dir,
                     "person" + str(person2_id) + "_pose" + str(pose2_id) + ".npy",
                 )
             )
-            x1_array[:, :, 3] = x0_array[:, :, 3]
-            x1 = Image.fromarray(x1_array)
             y = -1
 
-        x0 = self.transform(x0)
-        x1 = self.transform(x1)
+        x_ref = self.transform(image=x_ref)["image"]
+        x_ref = self.random_apply_mask(x_ref)
 
-        if self.split == "train":
-            if random.random() > 0.5:
-                x0_mask = (x0[3] > -0.999).unsqueeze(0).float()
-                x0 = x0 * x0_mask
-            if random.random() > 0.5:
-                x1_mask = (x1[3] > -0.999).unsqueeze(0).float()
-                x1 = x1 * x1_mask
+        x = self.transform(image=x)["image"]
+        x = self.random_apply_mask(x)
 
-        return (x0, x1, y)
+        return x_ref, x, y
