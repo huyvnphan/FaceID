@@ -28,13 +28,13 @@ class FaceIDDataset(Dataset):
             self.transform = A.Compose(
                 [
                     A.HorizontalFlip(),
-                    A.ShiftScaleRotate(
-                        shift_limit=0.0625,
-                        scale_limit=0.1,
-                        rotate_limit=15,
-                        p=0.5,
-                        border_mode=0,
-                    ),
+                    # A.ShiftScaleRotate(
+                    #     shift_limit=0.0625,
+                    #     scale_limit=0.1,
+                    #     rotate_limit=15,
+                    #     p=0.5,
+                    #     border_mode=0,
+                    # ),
                     A.RandomCrop(256, 256),
                     A.Normalize(mean, std),
                     ToTensorV2(),
