@@ -60,7 +60,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_size", type=int, default=128 * 100)
     parser.add_argument("--val_size", type=int, default=128 * 100)
     parser.add_argument("--test_size", type=int, default=128 * 100)
-    parser.add_argument("--max_epochs", type=int, default=50)
+    parser.add_argument("--max_epochs", type=int, default=30)
     parser.add_argument(
         "--optimizer", type=str, default="AdamW", choices=["AdamW", "SGD"]
     )
