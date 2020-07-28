@@ -102,9 +102,9 @@ class FaceIDDataset(Dataset):
             y = -1
 
         x_ref = self.transform(image=x_ref)["image"]
-        x_ref = self.random_apply_mask(x_ref)
+        # x_ref = self.random_apply_mask(x_ref)
 
         x = self.transform(image=x)["image"]
-        x = self.random_apply_mask(x)
+        # x = self.random_apply_mask(x)
 
         return x_ref, x, y

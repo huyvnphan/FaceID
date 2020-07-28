@@ -65,7 +65,7 @@ if __name__ == "__main__":
         "--optimizer", type=str, default="AdamW", choices=["AdamW", "SGD"]
     )
     parser.add_argument("--learning_rate", type=float, default=1e-3)
-    parser.add_argument("--weight_decay", type=float, default=1e-2)
+    parser.add_argument("--weight_decay", type=float, default=1e-3)
     parser.add_argument(
         "--cnn_arch",
         type=str,
