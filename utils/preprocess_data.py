@@ -67,15 +67,10 @@ def stack_data(raw_dir, processed_dir):
             photo_rgb = photo_id + "c.bmp"
             photo_rgb = Image.open(os.path.join(raw_dir, a_person, photo_rgb))
             photo_rgb = np.array(photo_rgb.convert("RGB").resize((640, 480)))
-            photo_rgb = photo_rgb.astype(np.float32)
-            photo_rgb = photo_rgb / 255.0  # values in range [0, 1]
 
             photo_depth = photo_id + "d.dat"
             photo_depth = np.loadtxt(os.path.join(raw_dir, a_person, photo_depth))
-            photo_depth = photo_depth.astype(np.float32)
-            photo_depth = (photo_depth - photo_depth.min()) / (
-                photo_depth.max() - photo_depth.min()
-            )  # values in range [0, 1]
+            photo_depth = photo_depth - photo_depth.min()
 
             # Align RGB and D
             photo_depth = np.pad(photo_depth, [(0, 0), (20, 0)], mode="constant")
@@ -85,6 +80,10 @@ def stack_data(raw_dir, processed_dir):
             # Stack RGB and D
             rgbd = np.concatenate((photo_rgb, photo_depth), axis=2)
             rgbd = crop_center(rgbd, 300, 300)
+            rgbd = np.uint8(rgbd)  # values form 0 - 255
+            rgbd = np.float32(rgbd)
+            rgbd = rgbd / 255.0  # normalize to range [0, 1]
+
             rgbd = torch.from_numpy(rgbd)  # 300 x 300 x 4
             rgbd = rgbd.permute(2, 0, 1)  # 4 x 300 x 300
             rgbd = (rgbd - 0.5) / 0.5  # normalize to range [-1, 1]
