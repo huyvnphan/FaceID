@@ -134,7 +134,7 @@ class ResNet(nn.Module):
         block=BasicBlock,
         layers=[2, 2, 2, 2],
         num_classes=128,
-        zero_init_residual=False,
+        zero_init_residual=True,
         groups=1,
         width_per_group=64,
         replace_stride_with_dilation=None,

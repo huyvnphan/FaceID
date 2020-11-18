@@ -1,4 +1,6 @@
 .ipynb_checkpoints
 __pycache__
-logs
-checkpoints
+checkpoints/
+wandb/
+faceid/
+logs/
