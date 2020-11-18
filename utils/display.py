@@ -11,30 +11,23 @@ def to_numpy(x):
     return x.numpy()
 
 
-def display(faceid_model, x0, x1):
+def display(x_ref, x, cosine_x):
 
-    faceid_model.eval()
-    with torch.no_grad():
-        embed_x0 = faceid_model(x0)
-        embed_x1 = faceid_model(x1)
-
-    cosine = round(torch.nn.CosineSimilarity()(embed_x0, embed_x1).item(), 4)
-
-    x0 = to_numpy(x0)
-    x1 = to_numpy(x1)
+    x_ref = to_numpy(x_ref)
+    x = to_numpy(x)
 
     fig, axs = plt.subplots(2, 2)
     fig.set_size_inches(10, 10)
 
-    axs[0, 0].imshow(x0[:, :, :3])
-    axs[0, 0].set_title("X0 - RGB")
-    axs[1, 0].imshow(x0[:, :, 3], cmap="RdYlBu")
-    axs[1, 0].set_title("X0 - Depth")
+    axs[0, 0].imshow(x_ref[:, :, :3])
+    axs[0, 0].set_title("x_ref - RGB")
+    axs[1, 0].imshow(x_ref[:, :, 3], cmap="RdYlBu")
+    axs[1, 0].set_title("x_ref - Depth")
 
-    axs[0, 1].imshow(x1[:, :, :3])
-    axs[0, 1].set_title("X1 - RGB \n Cosine to X0: " + str(cosine), color="b")
-    axs[1, 1].imshow(x1[:, :, 3], cmap="RdYlBu")
-    axs[1, 1].set_title("X1 - Depth")
+    axs[0, 1].imshow(x[:, :, :3])
+    axs[0, 1].set_title("x - RGB \n Cosine to x_ref: " + str(cosine_x), color="b")
+    axs[1, 1].imshow(x[:, :, 3], cmap="RdYlBu")
+    axs[1, 1].set_title("x - Depth")
 
     for i in range(2):
         for j in range(2):
