@@ -15,7 +15,6 @@ class FaceIDModule(pl.LightningModule):
         self.model = ResNet()
         self.loss = nn.CosineEmbeddingLoss(margin=0.5)
         self.cosine = nn.CosineSimilarity()
-        self.threshold = args.threshold
 
     @staticmethod
     def add_model_specific_args(parent_parser):
@@ -28,8 +27,8 @@ class FaceIDModule(pl.LightningModule):
         cosine = self.cosine(embed_x0, embed_x1)
         same_class_cosine = cosine[y == 1]
         diff_class_cosine = cosine[y == -1]
-        true_positive = (same_class_cosine > self.threshold).sum()
-        true_negative = (diff_class_cosine < self.threshold).sum()
+        true_positive = (same_class_cosine > self.hparams.threshold).sum()
+        true_negative = (diff_class_cosine < self.hparams.threshold).sum()
         accuracy = (true_positive + true_negative) / float(y.size(0))
         return same_class_cosine.mean(), diff_class_cosine.mean(), accuracy
 
