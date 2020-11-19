@@ -5,9 +5,7 @@
 ![alt text](figures/data.jpg "Examples")
 
 # Requirements
-- tqdm >= 4.44.1
-- numpy >= 1.18.1
-- pytorch >= 1.4.0
-- torchvision > 0.5.0
-- tensorboard >= 2.2.0
-- pytorch-lightning >= 0.7.1
+# Requirements
+- pytorch = 1.7.0
+- torchvision = 0.8.1
+- pytorch-lightning = 1.0.7
