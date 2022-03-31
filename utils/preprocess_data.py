@@ -19,7 +19,7 @@ def download(url):
 
     # Total size in Mebibyte
     total_size = int(r.headers.get("content-length", 0))
-    block_size = 2 ** 20  # Mebibyte
+    block_size = 2**20  # Mebibyte
     t = pbar(total=total_size, unit="MiB", unit_scale=True)
 
     header = r.headers["content-disposition"]
@@ -70,7 +70,16 @@ def stack_data(raw_dir, processed_dir):
 
             photo_depth = photo_id + "d.dat"
             photo_depth = np.loadtxt(os.path.join(raw_dir, a_person, photo_depth))
-            photo_depth = photo_depth - photo_depth.min()
+
+            # Valid range is from 400 to 3000
+            # But most of the fact depth is from 400 to 1200
+            photo_depth = np.clip(photo_depth, a_min=400, a_max=1200)
+
+            # Scale to [0-1] for photo_depth
+            photo_depth = (photo_depth - 400) / (1200 - 400)
+
+            # Scale to [0-255]
+            photo_depth = photo_depth * 255
 
             # Align RGB and D
             photo_depth = np.pad(photo_depth, [(0, 0), (20, 0)], mode="constant")
@@ -80,7 +89,6 @@ def stack_data(raw_dir, processed_dir):
             # Stack RGB and D
             rgbd = np.concatenate((photo_rgb, photo_depth), axis=2)
             rgbd = crop_center(rgbd, 300, 300)
-            rgbd = np.uint8(rgbd)  # values form 0 - 255
             rgbd = np.float32(rgbd)
             rgbd = rgbd / 255.0  # normalize to range [0, 1]
 
